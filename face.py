@@ -23,35 +23,38 @@ def train_face_recognition(dataset_path, model_save_path="trained_model.joblib")
     known_names = []
     known_ids = []
 
-    # Check if the trained model is already saved
     if os.path.exists(model_save_path):
         print("Loading pre-trained model...")
-        known_faces, known_names, known_ids = joblib.load(model_save_path)
-        return known_faces, known_names, known_ids
+        try:
+            known_faces, known_names, known_ids = joblib.load(model_save_path)
+            return known_faces, known_names, known_ids
+        except Exception as e:
+            print(f"Error loading pre-trained model: {e}")
+            known_faces, known_names, known_ids = [], [], []
 
     print("Training the model...")
 
-    # Resize images to speed up processing
     def resize_image(image):
         return cv2.resize(image, (0, 0), fx=0.5, fy=0.5)
 
-    # Function to process each image
     def process_image(image_path):
-        image = face_recognition.load_image_file(image_path)
-        image = resize_image(image)
-        face_landmarks = face_recognition.face_landmarks(image)
+        try:
+            image = face_recognition.load_image_file(image_path)
+            image = resize_image(image)
+            face_landmarks = face_recognition.face_landmarks(image)
 
-        if face_landmarks:
-            top, right, bottom, left = face_recognition.face_locations(image)[0]
-            face_encoding = face_recognition.face_encodings(image, [(top, right, bottom, left)])[0]
-            name, emp_id = extract_info_from_filename(os.path.basename(image_path))
-            known_faces.append(face_encoding)
-            known_names.append(name)
-            known_ids.append(emp_id)
-        else:
-            print(f"No face detected in {image_path}")
+            if face_landmarks:
+                top, right, bottom, left = face_recognition.face_locations(image)[0]
+                face_encoding = face_recognition.face_encodings(image, [(top, right, bottom, left)])[0]
+                name, emp_id = extract_info_from_filename(os.path.basename(image_path))
+                known_faces.append(face_encoding)
+                known_names.append(name)
+                known_ids.append(emp_id)
+            else:
+                print(f"No face detected in {image_path}")
+        except Exception as e:
+            print(f"Error processing image {image_path}: {e}")
 
-    # Process images in parallel using ThreadPoolExecutor
     with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
         for person_name in os.listdir(dataset_path):
             person_path = os.path.join(dataset_path, person_name)
@@ -60,10 +63,12 @@ def train_face_recognition(dataset_path, model_save_path="trained_model.joblib")
                 image_paths = [os.path.join(person_path, image_name) for image_name in os.listdir(person_path)]
                 executor.map(process_image, image_paths)
 
-    # Save the trained model
-    joblib.dump((known_faces, known_names, known_ids), model_save_path)
-    print("Finished")
-    print("Model took", time.time() - a, "seconds")
+    try:
+        joblib.dump((known_faces, known_names, known_ids), model_save_path)
+        print("Finished")
+        print("Model took", time.time() - a, "seconds")
+    except Exception as e:
+        print(f"Error saving trained model: {e}")
 
     return known_faces, known_names, known_ids
 

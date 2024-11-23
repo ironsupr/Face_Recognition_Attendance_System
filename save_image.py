@@ -25,7 +25,7 @@ def capture_and_save_images(name, roll_no, num_images_to_capture=5):
         cv2.imshow('Capture Image', frame)
 
         # Save the captured image with the name in the path
-        image_path = os.path.join(images_dir, name, f'{name}_{roll_no}_{image_number}.jpg')
+        image_path = os.path.join(images_dir, name, f'{name}_{roll_no}_{image_number:03}.jpg')
         os.makedirs(os.path.dirname(image_path), exist_ok=True)
         cv2.imwrite(image_path, frame)
         print(f'Image {image_number} saved: {image_path}')
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     roll_no = input("Enter Roll No.: ")
 
     # Set the number of images to capture
-    num_images_to_capture = 100
+    num_images_to_capture = 10 # Set the number of images to capture
 
     # Capture and save images automatically
     capture_and_save_images(name, roll_no, num_images_to_capture)
