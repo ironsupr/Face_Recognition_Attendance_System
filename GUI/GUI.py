@@ -6,6 +6,7 @@ from face_module import train_face_recognition, recognize_faces
 from customtkinter import *
 from datetime import datetime
 import os
+from save_image import capture_and_save_images
 
 # Initialize GUI
 root = CTk()
@@ -78,7 +79,44 @@ def start_recognition_thread():
 button_face = CTkButton(frame, text="Face Attendance", command=start_recognition_thread)
 button_face.pack(padx=20, pady=20, fill="x")
 
+def save_img():
+    remove_widgets()
+
+    label_name = CTkLabel(root, text="Enter Name:", font=("Arial", 20))
+    label_name.place(relx=0.4, rely=0.3, anchor="center")
+
+    entry_name = CTkEntry(root, font=("Arial", 20))
+    entry_name.place(relx=0.6, rely=0.3, anchor="center")
+
+    label_roll_no = CTkLabel(root, text="Enter Roll No.:", font=("Arial", 20))
+    label_roll_no.place(relx=0.4, rely=0.4, anchor="center")
+
+    entry_roll_no = CTkEntry(root, font=("Arial", 20))
+    entry_roll_no.place(relx=0.6, rely=0.4, anchor="center")
+
+    def save_images():
+        name = entry_name.get()
+        roll_no = entry_roll_no.get()
+        num_images_to_capture = 10
+        capture_and_save_images(name, roll_no, num_images_to_capture)
+    
+    button_save = CTkButton(root, text="Save Images", command=save_images)
+    button_save.place(relx=0.5, rely=0.55, anchor="center")
+
+    confirm_label = CTkLabel(root, text="Images will be saved in the 'images' folder.", font=("Arial", 20))
+    confirm_label.place(relx=0.5, rely=0.8, anchor="center")
+
+button_save_image = CTkButton(frame, text="Save Image to Dataset", command=save_img)
+button_save_image.pack(padx=20, pady=20, fill="x")
+
+def enter_data_student():
+    pass
+
+button_save_std_data = CTkButton(frame, text="See Student Data", command=enter_data_student)
+button_save_std_data.pack(padx=20, pady=20, fill="x")
+
 def open_csv():
+    remove_widgets()
     """Opens today's attendance CSV file."""
     filename = f"attendance_{datetime.now().strftime('%Y-%m-%d')}.csv"
     if os.path.exists(filename):
