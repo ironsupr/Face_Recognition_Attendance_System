@@ -110,10 +110,41 @@ button_save_image = CTkButton(frame, text="Save Image to Dataset", command=save_
 button_save_image.pack(padx=20, pady=20, fill="x")
 
 def enter_data_student():
-    pass
+    remove_widgets()
+    def save_data():
+        name = entry_name.get()
+        roll_no = entry_roll_no.get()
+        with open("student_data.csv", "a") as file:
+            file.write(f"{name},{roll_no}\n")
+        label_saved = CTkLabel(root, text="Data saved successfully.", font=("Arial", 20))
+        label_saved.place(relx=0.5, rely=0.7, anchor="center")
+    entry_name = CTkEntry(root, font=("Arial", 20))
+    entry_name.place(relx=0.5, rely=0.3, anchor="center")
 
-button_save_std_data = CTkButton(frame, text="See Student Data", command=enter_data_student)
+    entry_roll_no = CTkEntry(root, font=("Arial", 20))
+    entry_roll_no.place(relx=0.5, rely=0.4, anchor="center")
+
+    label_name = CTkLabel(root, text="Enter Name:", font=("Arial", 20))
+    label_name.place(relx=0.3, rely=0.3, anchor="center")
+
+    label_roll_no = CTkLabel(root, text="Enter Roll No.:", font=("Arial", 20))
+    label_roll_no.place(relx=0.3, rely=0.4, anchor="center")
+
+    button_save_data = CTkButton(root, text="Save Data", command=save_data)
+
+button_save_std_data = CTkButton(frame, text="Save Student Data", command=enter_data_student)
 button_save_std_data.pack(padx=20, pady=20, fill="x")
+
+# Make Improvements here
+def show_student_data():
+    remove_widgets()
+    with open("student_data.csv", "r") as file:
+        data = file.read()
+    label_data = CTkLabel(root, text=data, font=("Arial", 20))
+    label_data.place(relx=0.5, rely=0.5, anchor="center")
+
+button_show_student_data = CTkButton(frame, text="Show Student Data")
+button_show_student_data.pack(padx=20, pady=20, fill="x")
 
 def open_csv():
     remove_widgets()
